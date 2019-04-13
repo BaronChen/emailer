@@ -13,7 +13,7 @@ export const errorHanlder = (
   }
 
   if (err.statusCode === 500) {
-    logger.log('error', JSON.stringify(err));
+    logger.error('error: ', err);
   }
 
   res.status(err.statusCode).send(err.message);

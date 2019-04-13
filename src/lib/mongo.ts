@@ -7,7 +7,7 @@ export const connectMongo = (connectionString: string) => {
     { useNewUrlParser: true },
     err => {
       if (err) {
-        logger.error(JSON.stringify(err));
+        logger.error(err);
       } else {
         logger.info(`Connected to mongo at ${connectionString}`);
       }

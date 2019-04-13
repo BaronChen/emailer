@@ -63,7 +63,7 @@ export const queryJobStatus = async (
   return {
     referenceId: result._id.toString(),
     status: result.status,
-    changedAt: result.modified
+    updatedAt: result.modified
   };
 };
 

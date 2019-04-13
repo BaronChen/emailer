@@ -20,5 +20,5 @@ export interface IEmailStatusQueryRequest {
 export interface IEmailStatusQueryResponse {
   referenceId: string;
   status: EmailJobStatus;
-  changedAt: Date;
+  updatedAt: Date;
 }

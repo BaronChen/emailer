@@ -40,7 +40,7 @@ const sendEmailWithSendGrid = async (payload: ISendGridPayload) => {
     await post(options);
     return true;
   } catch (err) {
-    logger.error(`Fail to send mail using SendGrid: ${JSON.stringify(err)}`);
+    logger.error(`Fail to send mail using SendGrid with err: `, err);
     return false;
   }
 };

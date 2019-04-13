@@ -34,9 +34,10 @@ const publishEvent = async (event: IEventBase): Promise<boolean> => {
     logger.error(
       `Fail to send event ${event.eventType} for entity ${
         event.eventType
-      } with err ${JSON.stringify(err)}`
+      } with err: `,
+      err
     );
-    // TODO: Retry mechanism for re-send message
+    // TODO: Retry mechanism for re-publish message
     return false;
   }
 };
