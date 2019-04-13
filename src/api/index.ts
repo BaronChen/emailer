@@ -6,6 +6,7 @@ const app: express.Express = express();
 const port = process.env.SERVER_PORT || 8888;
 
 export const startApi = () => {
+  app.use(express.json());
   app.use('/email', emailRouter);
 
   app.get(

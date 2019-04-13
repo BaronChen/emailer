@@ -1,17 +1,32 @@
+import {
+  emailService,
+  IEmailStatusQueryRequest,
+  ISendEmailRequest
+} from '@common/services';
 import { Request, Response } from 'express';
 import uuid = require('uuid');
 
-const createEmailJob = async (req: Request, res: Response) => {
-  res.send(uuid.v4());
+const post = async (req: Request, res: Response) => {
+  const sendEmailRequest: ISendEmailRequest = {
+    ...req.body
+  };
+  const response = await emailService.createEmailJob(sendEmailRequest);
+  res.json(response);
 };
 
-const queryEmailJobStatus = async (req: Request, res: Response) => {
-  res.json({ status: 'failed' });
+const get = async (req: Request, res: Response) => {
+  const emailStatusQueryRequest: IEmailStatusQueryRequest = {
+    referenceId: req.params.referenceId
+  };
+
+  const response = await emailService.queryJobStatus(emailStatusQueryRequest);
+
+  res.json(response);
 };
 
 const contoller = {
-  createEmailJob,
-  queryEmailJobStatus
+  post,
+  get
 };
 
 export default contoller;

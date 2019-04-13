@@ -4,11 +4,8 @@ import emailController from './emailController';
 
 const router = Router();
 
-router.post('/sendEmail', wrapper(emailController.createEmailJob));
+router.post('/', wrapper(emailController.post));
 
-router.get(
-  '/query-status/:jobId',
-  wrapper(emailController.queryEmailJobStatus)
-);
+router.get('/:referenceId', wrapper(emailController.get));
 
 export default router;

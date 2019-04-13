@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import logger from '../logger';
 import { ApiError } from './apiError';
 
 export const errorHanlder = (
@@ -12,8 +13,8 @@ export const errorHanlder = (
   }
 
   if (err.statusCode === 500) {
-    console.log(err);
+    logger.log('error', JSON.stringify(err));
   }
-  console.log('error!!!');
+
   res.status(err.statusCode).send(err.message);
 };

@@ -11,7 +11,8 @@
     "outDir": "build",
     "experimentalDecorators": true,
     "paths": {
-      "@lib/*": ["src/lib/*"]
+      "@lib/*": ["src/lib/*"],
+      "@common/*": ["src/common/*"]
     }
   },
   "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"],
