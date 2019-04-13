@@ -25,7 +25,7 @@ const consumer: Consumer = Consumer.create({
   handleMessage: async (message: SQS.Message) => {
     const eventType = message.MessageAttributes.EventType.StringValue;
     const entityId = message.MessageAttributes.EntityId.StringValue;
-    logger.error(`start to process event ${eventType} for entity ${entityId}`);
+    logger.info(`start to process event ${eventType} for entity ${entityId}`);
     try {
       if (eventHandlers[eventType]) {
         const event = JSON.parse(message.Body);
