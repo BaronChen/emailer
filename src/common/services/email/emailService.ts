@@ -1,13 +1,20 @@
 import { emailJobRepository, IEmailJob } from '@common/db';
 import { EmailJobStatus, EmailServiceProvider } from '@common/enums';
-import { EventTypes } from '@common/events';
+import {
+  EventTypes,
+  IEmailJobCompleted,
+  IEmailJobFailed
+} from '@common/events';
 import { IEmailJobCreated } from '@common/events';
 import { ApiError } from '@lib/api';
-import { IMailGunPayload, mailGun } from '@lib/emailServiceProvider/';
+import { mailGun, sendGrid } from '@lib/emailServiceProvider/';
 import logger from '@lib/logger';
 import { publisher } from '@lib/sqs';
 import uuid = require('uuid');
-import { getCurrentServiceProvider } from './emailServiceProviderSelector';
+import {
+  getCurrentServiceProvider,
+  tryToFailOver
+} from './emailServiceProviderSelector';
 import {
   IEmailStatusQueryRequest,
   IEmailStatusQueryResponse,
@@ -77,12 +84,15 @@ export const sendEmail = async (emailJobReferenceId: string): Promise<void> => {
   const job = await emailJobRepository.findById(emailJobReferenceId);
   let success = false;
   const serviceProvider = getCurrentServiceProvider();
+  logger.info(`Try to send email for job ${job.id} with ${serviceProvider}`);
   switch (serviceProvider) {
     case EmailServiceProvider.MailGun:
-      success = await mailGun.sendEmailWithMailGun(getMailgGunPayLoad(job));
+      success = await mailGun.sendEmailWithMailGun(job.toMailGunPayload());
       break;
     case EmailServiceProvider.SendGrid:
-      logger.info(`Not impletemnted yet`);
+      success = await sendGrid.sendEmailWithSendGrid(job.toSendGridPayload());
+      break;
+    default:
       break;
   }
 
@@ -95,29 +105,18 @@ export const sendEmail = async (emailJobReferenceId: string): Promise<void> => {
     await publisher.publishEvent({
       eventType: EventTypes.EmailJobCompleted,
       entityId: job.id,
-      eventId: uuid.v4()
-    });
+      eventId: uuid.v4(),
+      serviceProviderUsed: serviceProvider
+    } as IEmailJobCompleted);
   } else {
-    logger.warning(
-      `Email fail to sent for job ${job.id} with ${serviceProvider}`
-    );
+    logger.info(`Email fail to sent for job ${job.id} with ${serviceProvider}`);
+    tryToFailOver(serviceProvider);
     await publisher.publishEvent({
       eventType: EventTypes.EmailJobFailed,
       entityId: job.id,
       eventId: uuid.v4()
-    });
+    } as IEmailJobFailed);
   }
-};
-
-const getMailgGunPayLoad = (job: IEmailJob): IMailGunPayload => {
-  return {
-    from: job.from,
-    to: job.to.join(','),
-    cc: job.cc.join(','),
-    bcc: job.bcc.join(','),
-    subject: job.subject,
-    text: job.body
-  };
 };
 
 export default {

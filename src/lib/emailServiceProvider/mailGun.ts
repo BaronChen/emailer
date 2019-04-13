@@ -33,7 +33,7 @@ const sendEmailWithMailGun = async (payload: IMailGunPayload) => {
     const response = await post(options);
     return true;
   } catch (err) {
-    logger.error(`Fail to send mail using mailgun: ${JSON.stringify(err)}`);
+    logger.error(`Fail to send mail using MailGun: ${JSON.stringify(err)}`);
     return false;
   }
 };
