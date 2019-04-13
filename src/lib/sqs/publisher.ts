@@ -1,26 +1,26 @@
 import logger from '@lib/logger';
 import { SQS } from 'aws-sdk';
-import { IEventBase } from './eventBase';
+import { IMessageBase } from './jobBase';
 
 const queueUrl =
   process.env.SQS_URL ||
-  'https://sqs.ap-southeast-2.amazonaws.com/677611292116/emailer-event-queue.fifo';
+  'https://sqs.ap-southeast-2.amazonaws.com/677611292116/emailer-message-queue.fifo';
 
-const publishEvent = async (event: IEventBase): Promise<boolean> => {
+const publishMessage = async (message: IMessageBase): Promise<boolean> => {
   const sqs = new SQS();
   const params: SQS.SendMessageRequest = {
     MessageAttributes: {
       EntityId: {
         DataType: 'String',
-        StringValue: event.entityId
+        StringValue: message.entityId
       },
-      EventType: {
+      MessageType: {
         DataType: 'String',
-        StringValue: event.eventType
+        StringValue: message.messageType
       }
     },
-    MessageBody: JSON.stringify(event),
-    MessageGroupId: event.eventId,
+    MessageBody: JSON.stringify(message),
+    MessageGroupId: message.entityId,
     QueueUrl: queueUrl
   };
 
@@ -32,8 +32,8 @@ const publishEvent = async (event: IEventBase): Promise<boolean> => {
     return true;
   } catch (err) {
     logger.error(
-      `Fail to send event ${event.eventType} for entity ${
-        event.eventType
+      `Fail to publish message ${message.messageType} for entity ${
+        message.entityId
       } with err: `,
       err
     );
@@ -43,5 +43,5 @@ const publishEvent = async (event: IEventBase): Promise<boolean> => {
 };
 
 export default {
-  publishEvent
+  publishMessage
 };

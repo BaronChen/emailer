@@ -1,11 +1,6 @@
 import { emailJobRepository, IEmailJob } from '@common/db';
 import { EmailJobStatus, EmailServiceProvider } from '@common/enums';
-import {
-  EventTypes,
-  IEmailJobCompleted,
-  IEmailJobFailed
-} from '@common/events';
-import { IEmailJobCreated } from '@common/events';
+import { IEmailJobMessage, MessageTypes } from '@common/messages';
 import { ApiError } from '@lib/api';
 import { mailGun, sendGrid } from '@lib/emailServiceProvider/';
 import logger from '@lib/logger';
@@ -37,16 +32,16 @@ export const createEmailJob = async (
   const result = await emailJobRepository.create(emailJob);
   const id = result._id.toString();
 
-  const event: IEmailJobCreated = {
+  const message: IEmailJobMessage = {
     entityId: id,
-    eventId: uuid.v4(),
-    eventType: EventTypes.EmailJobCreated
+    messageId: uuid.v4(),
+    messageType: MessageTypes.EmailJobMessage
   };
 
-  const success = await publisher.publishEvent(event);
+  const success = await publisher.publishMessage(message);
 
   if (!success) {
-    // TODO: Handle fail to publish event
+    // TODO: Handle fail to publish message
     throw new ApiError('Fail to process send email request');
   }
 
@@ -63,21 +58,9 @@ export const queryJobStatus = async (
   return {
     referenceId: result._id.toString(),
     status: result.status,
-    updatedAt: result.modified
+    updatedAt: result.modified,
+    serviceProvider: result.serviceUsed
   };
-};
-
-export const completeEmailJob = async (
-  emailJobReferenceId: string,
-  serviceProviderUsed: EmailServiceProvider
-) => {
-  const job = await emailJobRepository.findById(emailJobReferenceId);
-  job.serviceUsed = serviceProviderUsed;
-  job.status = EmailJobStatus.Sent;
-  await emailJobRepository.update(job);
-  logger.info(
-    `Email job ${job.id} completed with service provider ${serviceProviderUsed}`
-  );
 };
 
 export const sendEmail = async (emailJobReferenceId: string): Promise<void> => {
@@ -102,26 +85,19 @@ export const sendEmail = async (emailJobReferenceId: string): Promise<void> => {
 
   if (success) {
     logger.info(`Email sent for job ${job.id} with ${serviceProvider}`);
-    await publisher.publishEvent({
-      eventType: EventTypes.EmailJobCompleted,
-      entityId: job.id,
-      eventId: uuid.v4(),
-      serviceProviderUsed: serviceProvider
-    } as IEmailJobCompleted);
   } else {
     logger.info(`Email fail to sent for job ${job.id} with ${serviceProvider}`);
     tryToFailOver(serviceProvider);
-    await publisher.publishEvent({
-      eventType: EventTypes.EmailJobFailed,
+    await publisher.publishMessage({
+      messageType: MessageTypes.EmailJobMessage,
       entityId: job.id,
-      eventId: uuid.v4()
-    } as IEmailJobFailed);
+      messageId: uuid.v4()
+    } as IEmailJobMessage);
   }
 };
 
 export default {
   createEmailJob,
   queryJobStatus,
-  sendEmail,
-  completeEmailJob
+  sendEmail
 };

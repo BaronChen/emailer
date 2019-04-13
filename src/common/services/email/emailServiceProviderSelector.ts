@@ -1,4 +1,5 @@
-import { EmailServiceProvider } from '@common/enums';
+import { EmailServiceProvider, enumToArray } from '@common/enums';
+import logger from '@lib/logger';
 
 const FAILOVER_THRESHOLD = process.env.FAILOVER_THRESHOLD || 3;
 
@@ -26,11 +27,11 @@ export const tryToFailOver = (failedServiceProvider: EmailServiceProvider) => {
 const getFailOverProvider = (
   failedProvider: EmailServiceProvider
 ): EmailServiceProvider => {
-  console.log(`Fail over from ${failedProvider}`);
-  // TODO: implement round robin algorithm to select fail over provider
-  if (failedProvider === EmailServiceProvider.MailGun) {
-    return EmailServiceProvider.SendGrid;
-  } else {
-    return EmailServiceProvider.MailGun;
+  const providers = enumToArray(EmailServiceProvider);
+  let i = providers.indexOf(failedProvider) + 1;
+  if (i >= providers.length) {
+    i = 0;
   }
+  logger.error(`Fail over to ${providers[i]}`);
+  return providers[i];
 };

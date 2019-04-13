@@ -4,36 +4,38 @@ import { Consumer } from 'sqs-consumer';
 
 const queueUrl =
   process.env.SQS_URL ||
-  'https://sqs.ap-southeast-2.amazonaws.com/677611292116/emailer-event-queue.fifo';
+  'https://sqs.ap-southeast-2.amazonaws.com/677611292116/emailer-message-queue.fifo';
 
-interface IEventHanlderRegistry {
-  [eventName: string]: (entityId: string, event: any) => Promise<void>;
+interface IMessageProcessorRegistry {
+  [messageType: string]: (entityId: string, message: any) => Promise<void>;
 }
 
-const eventHandlers: IEventHanlderRegistry = {};
+const messageProcessors: IMessageProcessorRegistry = {};
 
-const addEventHandler = <T>(
-  eventType: string,
-  handler: (entityId: string, payload: T) => Promise<void>
+const addMessageProcessor = <T>(
+  messageType: string,
+  processor: (entityId: string, payload: T) => Promise<void>
 ) => {
-  eventHandlers[eventType] = handler;
+  messageProcessors[messageType] = processor;
 };
 
 const consumer: Consumer = Consumer.create({
   queueUrl,
-  messageAttributeNames: ['EntityId', 'EventType'],
+  messageAttributeNames: ['EntityId', 'MessageType'],
   handleMessage: async (message: SQS.Message) => {
-    const eventType = message.MessageAttributes.EventType.StringValue;
+    const messageType = message.MessageAttributes.MessageType.StringValue;
     const entityId = message.MessageAttributes.EntityId.StringValue;
-    logger.info(`start to process event ${eventType} for entity ${entityId}`);
+    logger.info(
+      `start to process message ${messageType} for entity ${entityId}`
+    );
     try {
-      if (eventHandlers[eventType]) {
-        const event = JSON.parse(message.Body);
-        await eventHandlers[eventType](entityId, event);
+      if (messageProcessors[messageType]) {
+        const messageBody = JSON.parse(message.Body);
+        await messageProcessors[messageType](entityId, messageBody);
       }
     } catch (err) {
       logger.error(
-        `fail to process event ${eventType} for entity ${entityId} with Error: `,
+        `fail to process message ${messageType} for entity ${entityId} with Error: `,
         err
       );
     }
@@ -53,6 +55,6 @@ const startConsumer = () => {
 };
 
 export default {
-  addEventHandler,
+  addMessageProcessor,
   startConsumer
 };

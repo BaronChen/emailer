@@ -1,4 +1,4 @@
-import { EmailJobStatus } from '@common/enums';
+import { EmailJobStatus, EmailServiceProvider } from '@common/enums';
 
 export interface ISendEmailRequest {
   from: string;
@@ -21,4 +21,5 @@ export interface IEmailStatusQueryResponse {
   referenceId: string;
   status: EmailJobStatus;
   updatedAt: Date;
+  serviceProvider: EmailServiceProvider;
 }
