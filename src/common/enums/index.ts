@@ -5,7 +5,8 @@ export enum EmailServiceProvider {
 
 export enum EmailJobStatus {
   Created = 'Created',
-  Sent = 'Sent'
+  Sent = 'Sent',
+  Failed = 'Failed'
 }
 
 export const enumToArray = (e: any) => {

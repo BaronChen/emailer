@@ -11,7 +11,10 @@ const emailJobSchema = new Schema({
   content: String,
   modified: { type: Date, default: Date.now },
   created: { type: Date, default: Date.now },
-  serviceToUse: { type: String, enum: enumToArray(EmailServiceProvider) },
+  serviceUsed: {
+    type: String,
+    enum: enumToArray(EmailServiceProvider)
+  },
   status: { type: String, enum: enumToArray(EmailJobStatus) }
 });
 
@@ -25,7 +28,7 @@ export interface IEmailJob extends Document {
   content: string;
   modified: Date;
   created: Date;
-  serviceToUse: EmailServiceProvider;
+  serviceToUse?: EmailServiceProvider;
   status: EmailJobStatus;
 }
 

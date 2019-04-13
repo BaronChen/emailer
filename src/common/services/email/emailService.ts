@@ -1,4 +1,9 @@
 import { EmailJobStatus, EmailServiceProvider } from '@common/enums';
+import { IEmailJobCreated } from '@common/events';
+import { EventTypes } from '@common/events/eventTypes';
+import { ApiError } from '@lib/api';
+import { publisher } from '@lib/sqs';
+import uuid = require('uuid');
 import { emailJobRepository, IEmailJob } from '../../db';
 import {
   IEmailStatusQueryRequest,
@@ -15,13 +20,28 @@ export const createEmailJob = async (
     ...sendEmailRequest,
     modified: now,
     created: now,
-    serviceToUse: EmailServiceProvider.MailGun,
+    serviceToUse: null,
     status: EmailJobStatus.Created
   } as IEmailJob;
 
   const result = await emailJobRepository.create(emailJob);
+  const id = result._id.toString();
 
-  return { referenceId: result._id.toString() };
+  const event: IEmailJobCreated = {
+    entityId: id,
+    eventId: uuid.v4(),
+    eventType: EventTypes.EmailJobCreated,
+    serviceToUse: EmailServiceProvider.MailGun
+  };
+
+  const success = await publisher.publishEvent(id, event, event.eventType);
+
+  if (!success) {
+    // TODO: Handle fail to publish event
+    throw new ApiError('Fail to process send email request');
+  }
+
+  return { referenceId: id };
 };
 
 export const queryJobStatus = async (
