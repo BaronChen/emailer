@@ -1,0 +1,10 @@
+{
+  // "editor.codeActionsOnSave": {
+  //    "source.fixAll.tslint": true
+
+  // },
+  "editor.formatOnSave": true,
+  "prettier.singleQuote": true,
+  "prettier.tslintIntegration": true,
+  "editor.tabSize": 2
+}
