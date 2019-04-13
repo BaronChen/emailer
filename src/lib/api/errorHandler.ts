@@ -1,5 +1,5 @@
+import logger from '@lib/logger';
 import { NextFunction, Request, Response } from 'express';
-import logger from '../logger';
 import { ApiError } from './apiError';
 
 export const errorHanlder = (

@@ -1,4 +1,5 @@
 export enum EventTypes {
   EmailJobCreated = 'EmailJobCreated',
-  EmailJobCompleted = 'EmailJobCompleted'
+  EmailJobCompleted = 'EmailJobCompleted',
+  EmailJobFailed = 'EmailJobFailed'
 }

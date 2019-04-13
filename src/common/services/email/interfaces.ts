@@ -1,13 +1,12 @@
 import { EmailJobStatus } from '@common/enums';
 
 export interface ISendEmailRequest {
-  fromAddress: string;
-  toAddresses: string[];
-  ccAddresses: string[];
-  bccAddresses: string[];
+  from: string;
+  to: string[];
+  cc: string[];
+  bcc: string[];
   body: string;
   subject: string;
-  content: string;
 }
 
 export interface ISendEmailResponse {

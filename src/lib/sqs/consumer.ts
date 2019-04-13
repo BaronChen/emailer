@@ -1,6 +1,6 @@
+import logger from '@lib/logger';
 import { SQS } from 'aws-sdk';
 import { Consumer } from 'sqs-consumer';
-import logger from '../logger';
 
 const queueUrl =
   process.env.SQS_URL ||
@@ -25,9 +25,14 @@ const consumer: Consumer = Consumer.create({
   handleMessage: async (message: SQS.Message) => {
     const eventType = message.MessageAttributes.EventType.StringValue;
     const entityId = message.MessageAttributes.EntityId.StringValue;
-    if (eventHandlers[eventType]) {
-      const event = JSON.parse(message.Body);
-      await eventHandlers[eventType](entityId, event);
+    try {
+      if (eventHandlers[eventType]) {
+        const event = JSON.parse(message.Body);
+        await eventHandlers[eventType](entityId, event);
+      }
+    } catch (err) {
+      logger.error(`fail to process event ${eventType} for entity ${entityId}`);
+      throw err;
     }
   }
 });

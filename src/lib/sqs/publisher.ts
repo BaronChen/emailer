@@ -1,29 +1,26 @@
+import logger from '@lib/logger';
 import { SQS } from 'aws-sdk';
-import logger from '../logger';
+import { IEventBase } from './eventBase';
 
 const queueUrl =
   process.env.SQS_URL ||
   'https://sqs.ap-southeast-2.amazonaws.com/677611292116/emailer-event-queue.fifo';
 
-const publishEvent = async (
-  entityId: string,
-  payload: any,
-  eventType: string
-): Promise<boolean> => {
+const publishEvent = async (event: IEventBase): Promise<boolean> => {
   const sqs = new SQS();
   const params: SQS.SendMessageRequest = {
     MessageAttributes: {
       EntityId: {
         DataType: 'String',
-        StringValue: entityId
+        StringValue: event.entityId
       },
       EventType: {
         DataType: 'String',
-        StringValue: eventType
+        StringValue: event.eventType
       }
     },
-    MessageBody: JSON.stringify(payload),
-    MessageGroupId: entityId,
+    MessageBody: JSON.stringify(event),
+    MessageGroupId: event.eventId,
     QueueUrl: queueUrl
   };
 
@@ -35,9 +32,9 @@ const publishEvent = async (
     return true;
   } catch (err) {
     logger.error(
-      `Fail to send event ${eventType} for entity ${entityId} with err ${JSON.stringify(
-        err
-      )}`
+      `Fail to send event ${event.eventType} for entity ${
+        event.eventType
+      } with err ${JSON.stringify(err)}`
     );
     // TODO: Retry mechanism for re-send message
     return false;

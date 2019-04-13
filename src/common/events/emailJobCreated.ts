@@ -1,8 +1,6 @@
+import { IEventBase } from '@lib/sqs';
 import { EventTypes } from './eventTypes';
 
-export interface IEmailJobCreated {
+export interface IEmailJobCreated extends IEventBase {
   eventType: EventTypes.EmailJobCreated;
-  entityId: string;
-  eventId: string;
-  serviceToUse: string;
 }

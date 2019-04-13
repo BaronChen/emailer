@@ -6,6 +6,7 @@ const create = async (emailJob: IEmailJob): Promise<IEmailJob> => {
 };
 
 const update = async (emailJob: IEmailJob): Promise<IEmailJob> => {
+  emailJob.modified = new Date();
   return await EmailJob.update({ _id: emailJob._id }, emailJob);
 };
 
