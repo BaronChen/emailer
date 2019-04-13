@@ -1,3 +1,3 @@
 export * from './apiError';
 export * from './errorHandler';
-export * from './request';
+export * from './wrapper';

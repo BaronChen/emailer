@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 
 export const wrapper = (
-  controllerMethod: (req: Request, res: Response) => Promise<any>
+  method: (req: Request, res: Response) => Promise<any>
 ) => async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await controllerMethod(req, res);
+    await method(req, res);
   } catch (err) {
     next(err);
   }
