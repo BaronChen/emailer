@@ -26,7 +26,8 @@ export const createEmailJob = async (
     modified: now,
     created: now,
     serviceUsed: null,
-    status: EmailJobStatus.Created
+    status: EmailJobStatus.Created,
+    retryCount: 0
   } as IEmailJob;
 
   const result = await emailJobRepository.create(emailJob);
@@ -59,7 +60,8 @@ export const queryJobStatus = async (
     referenceId: result._id.toString(),
     status: result.status,
     updatedAt: result.modified,
-    serviceProvider: result.serviceUsed
+    serviceProvider: result.serviceUsed,
+    retryCount: result.retryCount
   };
 };
 
@@ -81,6 +83,9 @@ export const sendEmail = async (emailJobReferenceId: string): Promise<void> => {
 
   job.serviceUsed = serviceProvider;
   job.status = success ? EmailJobStatus.Sent : EmailJobStatus.Failed;
+  if (!success) {
+    job.retryCount++;
+  }
   await emailJobRepository.update(job);
 
   if (success) {
@@ -93,6 +98,7 @@ export const sendEmail = async (emailJobReferenceId: string): Promise<void> => {
       entityId: job.id,
       messageId: uuid.v4()
     } as IEmailJobMessage);
+    logger.info(`Reschedule email for job ${job.id}`);
   }
 };
 

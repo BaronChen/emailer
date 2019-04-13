@@ -22,4 +22,5 @@ export interface IEmailStatusQueryResponse {
   status: EmailJobStatus;
   updatedAt: Date;
   serviceProvider: EmailServiceProvider;
+  retryCount: number;
 }

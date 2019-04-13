@@ -19,6 +19,7 @@ const emailJobSchema = new Schema({
     type: String,
     enum: [...enumToArray(EmailServiceProvider), null]
   },
+  retryCount: Number,
   status: { type: String, enum: enumToArray(EmailJobStatus) }
 });
 
@@ -76,6 +77,7 @@ export interface IEmailJob extends Document {
   created: Date;
   serviceUsed?: EmailServiceProvider;
   status: EmailJobStatus;
+  retryCount: number;
   toMailGunPayload: () => IMailGunPayload;
   toSendGridPayload: () => ISendGridPayload;
 }
