@@ -4,7 +4,7 @@ import {
   ISendEmailRequest
 } from '@common/services';
 import { Request, Response } from 'express';
-import { wrap } from '../common';
+import { IControllerMethod } from '../common';
 import { getShcema, postSchema } from './emailJobShcemas';
 
 const post = async (req: Request, res: Response) => {
@@ -25,9 +25,15 @@ const get = async (req: Request, res: Response) => {
   res.json(response);
 };
 
-const contoller = {
-  post: wrap(post, postSchema),
-  get: wrap(get, getShcema)
+const contoller: { [name: string]: IControllerMethod } = {
+  post: {
+    method: post,
+    schema: postSchema
+  },
+  get: {
+    method: get,
+    schema: getShcema
+  }
 };
 
 export default contoller;

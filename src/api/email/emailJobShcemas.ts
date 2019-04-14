@@ -4,41 +4,45 @@ import {
   isArrayValidator,
   isEmailValidator,
   isMongoIdValidator,
-  notEmptyArrayValidator
-} from '../common/validationHelper';
+  notEmptyArrayValidator,
+  trimString
+} from '../common';
 
 export const postSchema: ValidationSchema = {
   from: {
     in: 'body',
+    ...trimString(),
     ...existsValidator(),
     ...isEmailValidator()
   },
   to: {
     in: 'body',
     ...existsValidator(),
-    ...isArrayValidator(),
     ...notEmptyArrayValidator()
   },
   cc: {
     in: 'body',
     optional: true,
-    ...isArrayValidator()
+    ...notEmptyArrayValidator()
   },
   bcc: {
     in: 'body',
     optional: true,
-    ...isArrayValidator()
+    ...notEmptyArrayValidator()
   },
   'to.*': {
     in: 'body',
+    ...trimString(),
     ...isEmailValidator()
   },
   'cc.*': {
     in: 'body',
+    ...trimString(),
     ...isEmailValidator()
   },
   'bcc.*': {
     in: 'body',
+    ...trimString(),
     ...isEmailValidator()
   }
 };

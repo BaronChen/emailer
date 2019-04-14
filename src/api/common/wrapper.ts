@@ -6,6 +6,7 @@ import {
   ValidationSchema
 } from 'express-validator/check';
 import { ApiError, IErrorDetail } from './apiError';
+import { IControllerMethod } from './controllerMethod';
 
 const errorFormatter: ErrorFormatter<IErrorDetail> = (error): IErrorDetail => {
   return {
@@ -33,14 +34,11 @@ const wrapper = (
   }
 };
 
-export const wrap = (
-  method: (req: Request, res: Response) => Promise<any>,
-  validationShcema?: ValidationSchema
-) => {
+export const wrap = (controllerMethod: IControllerMethod) => {
   const wrappedMethod = [];
-  if (validationShcema) {
-    wrappedMethod.push(checkSchema(validationShcema));
+  if (controllerMethod.schema) {
+    wrappedMethod.push(checkSchema(controllerMethod.schema));
   }
-  wrappedMethod.push(wrapper(method));
+  wrappedMethod.push(wrapper(controllerMethod.method));
   return wrappedMethod;
 };

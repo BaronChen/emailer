@@ -1,9 +1,18 @@
 import {
   check,
   CustomValidator,
+  SanitizerSchemaOptions,
   ValidatorOptions,
   ValidatorSchemaOptions
 } from 'express-validator/check';
+
+export const trimString = (): {
+  [name: string]: SanitizerSchemaOptions<any>;
+} => {
+  return {
+    trim: {}
+  };
+};
 
 export const existsValidator = (): {
   [name: string]: ValidatorSchemaOptions<ValidatorOptions.ExistsOptions>;

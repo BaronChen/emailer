@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { checkSchema } from 'express-validator/check';
+import { wrap } from '../common';
 import emailJobController from './emailJobController';
 
 const router = Router();
 
-router.post('/', emailJobController.post);
+router.post('/', wrap(emailJobController.post));
 
-router.get('/:referenceId', emailJobController.get);
+router.get('/:referenceId', wrap(emailJobController.get));
 
 export default router;
