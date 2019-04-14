@@ -1,7 +1,5 @@
 import { EmailServiceProvider } from '@common/enums';
-import * as loggerModule from '@lib/logger';
 import { expect } from 'chai';
-import { stub } from 'sinon';
 import {
   EmailServiceProviderSelector,
   FAILOVER_THRESHOLD
@@ -12,10 +10,6 @@ describe('emailServiceProviderSelector', () => {
     EmailServiceProviderSelector.initialiseFailOverConfig(
       EmailServiceProvider.SendGrid
     );
-    stub(loggerModule, 'logger').callsFake(() => ({
-      error: () => {},
-      info: () => {}
-    }));
   });
 
   it('should initialise default service provider', () => {
