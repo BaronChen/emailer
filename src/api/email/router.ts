@@ -1,11 +1,11 @@
-import { wrapper } from '@lib/api';
 import { Router } from 'express';
-import emailController from './emailController';
+import { checkSchema } from 'express-validator/check';
+import emailJobController from './emailJobController';
 
 const router = Router();
 
-router.post('/', wrapper(emailController.post));
+router.post('/', emailJobController.post);
 
-router.get('/:referenceId', wrapper(emailController.get));
+router.get('/:referenceId', emailJobController.get);
 
 export default router;

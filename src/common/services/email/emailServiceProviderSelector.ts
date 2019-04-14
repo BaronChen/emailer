@@ -11,7 +11,9 @@ export const getCurrentServiceProvider = () => {
   return currentServiceProvider;
 };
 
-export const tryToFailOver = (failedServiceProvider: EmailServiceProvider) => {
+export const recordFailureForServiceProvider = (
+  failedServiceProvider: EmailServiceProvider
+) => {
   if (failedServiceProvider !== currentServiceProvider) {
     return;
   }

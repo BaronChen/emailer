@@ -1,14 +1,14 @@
 import { emailJobRepository, IEmailJob } from '@common/db';
 import { EmailJobStatus, EmailServiceProvider } from '@common/enums';
 import { IEmailJobMessage, MessageTypes } from '@common/messages';
-import { ApiError } from '@lib/api';
 import { mailGun, sendGrid } from '@lib/emailServiceProvider/';
 import logger from '@lib/logger';
 import { publisher } from '@lib/sqs';
-import uuid = require('uuid');
+import { ApiError } from 'src/api/common';
+import * as uuid from 'uuid';
 import {
   getCurrentServiceProvider,
-  tryToFailOver
+  recordFailureForServiceProvider
 } from './emailServiceProviderSelector';
 import {
   IEmailStatusQueryRequest,
@@ -39,12 +39,12 @@ export const createEmailJob = async (
     messageType: MessageTypes.EmailJobMessage
   };
 
-  const success = await publisher.publishMessage(message);
+  // const success = await publisher.publishMessage(message);
 
-  if (!success) {
-    // TODO: Handle fail to publish message
-    throw new ApiError('Fail to process send email request');
-  }
+  // if (!success) {
+  //   // TODO: Handle fail to publish message
+  //   throw new ApiError('Fail to process send email request');
+  // }
 
   return { referenceId: id };
 };
@@ -92,7 +92,7 @@ export const sendEmail = async (emailJobReferenceId: string): Promise<void> => {
     logger.info(`Email sent for job ${job.id} with ${serviceProvider}`);
   } else {
     logger.info(`Email fail to sent for job ${job.id} with ${serviceProvider}`);
-    tryToFailOver(serviceProvider);
+    recordFailureForServiceProvider(serviceProvider);
     await publisher.publishMessage({
       messageType: MessageTypes.EmailJobMessage,
       entityId: job.id,

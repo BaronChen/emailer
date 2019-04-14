@@ -1,5 +1,5 @@
-import { ApiError, errorHanlder } from '@lib/api';
 import * as express from 'express';
+import { ApiError, errorHanlder } from 'src/api/common';
 import emailRouter from './email/router';
 
 const app: express.Express = express();

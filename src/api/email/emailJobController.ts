@@ -4,7 +4,8 @@ import {
   ISendEmailRequest
 } from '@common/services';
 import { Request, Response } from 'express';
-import uuid = require('uuid');
+import { wrap } from '../common';
+import { getShcema, postSchema } from './emailJobShcemas';
 
 const post = async (req: Request, res: Response) => {
   const sendEmailRequest: ISendEmailRequest = {
@@ -25,8 +26,8 @@ const get = async (req: Request, res: Response) => {
 };
 
 const contoller = {
-  post,
-  get
+  post: wrap(post, postSchema),
+  get: wrap(get, getShcema)
 };
 
 export default contoller;
