@@ -1,5 +1,5 @@
 import {
-  emailService,
+  EmailService,
   IEmailStatusQueryRequest,
   ISendEmailRequest
 } from '@common/services';
@@ -11,7 +11,7 @@ const post = async (req: Request, res: Response) => {
   const sendEmailRequest: ISendEmailRequest = {
     ...req.body
   };
-  const response = await emailService.createEmailJob(sendEmailRequest);
+  const response = await EmailService.createEmailJob(sendEmailRequest);
   res.json(response);
 };
 
@@ -20,7 +20,7 @@ const get = async (req: Request, res: Response) => {
     referenceId: req.params.referenceId
   };
 
-  const response = await emailService.queryJobStatus(emailStatusQueryRequest);
+  const response = await EmailService.queryJobStatus(emailStatusQueryRequest);
 
   if (!response) {
     throw new ApiError('Email Job Not Found', 404);
@@ -29,7 +29,7 @@ const get = async (req: Request, res: Response) => {
   res.json(response);
 };
 
-const contoller: { [name: string]: IControllerMethod } = {
+export const EmailJobController: { [name: string]: IControllerMethod } = {
   post: {
     method: post,
     schema: postSchema
@@ -39,5 +39,3 @@ const contoller: { [name: string]: IControllerMethod } = {
     schema: getShcema
   }
 };
-
-export default contoller;

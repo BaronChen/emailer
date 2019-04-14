@@ -1,2 +1,2 @@
 export { IEmailJob } from './models/emailJob';
-export { default as emailJobRepository } from './emailJobRepository';
+export { EmailJobRepository } from './emailJobRepository';

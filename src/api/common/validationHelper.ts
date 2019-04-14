@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import {
   check,
   CustomValidator,
@@ -66,8 +67,8 @@ export const isMongoIdValidator = (): {
     }
   };
 };
-
-export const notEmptyAndIsUniqueAcrossArrays = (
+// TODO: make it possible to combine multiple custom validator
+export const notEmptyAndIsUniqueAcrossArraysValidator = (
   otherFields: string[]
 ): {
   [name: string]: ValidatorSchemaOptions<CustomValidator>;
@@ -75,30 +76,33 @@ export const notEmptyAndIsUniqueAcrossArrays = (
   return {
     custom: {
       errorMessage: errorMessageConstructor(
-        'Values must be not empty and unique across \'${field}\', ' +
+        '\'${field}\' can not be empty array. Values must be unique across \'${field}\', ' +
           otherFields.map(x => `'${x}'`).join(', ')
       ),
-      options: (value: any[], { req, location, path }): boolean => {
-        if (!Array.isArray(value) || value.length === 0) {
-          return false;
-        }
-
-        let allValues = [...value];
-        if (
-          Array.isArray(value) &&
-          Array.isArray(otherFields) &&
-          otherFields.length > 0
-        ) {
-          for (const otherField of otherFields) {
-            if (Array.isArray(req.body[otherField])) {
-              allValues = [...allValues, ...req.body[otherField]];
-            }
-          }
-        }
-        return new Set(allValues).size === allValues.length;
-      }
+      options: notEmptyAndIsUniqueAcrossArrays(otherFields)
     }
   };
 };
 
-export default {};
+export const notEmptyAndIsUniqueAcrossArrays = (otherFields: string[]) => (
+  value: any[],
+  { req, location, path }: { req: Request; location: string; path: string }
+): boolean => {
+  if (!Array.isArray(value) || value.length === 0) {
+    return false;
+  }
+
+  let allValues = [...value];
+  if (
+    Array.isArray(value) &&
+    Array.isArray(otherFields) &&
+    otherFields.length > 0
+  ) {
+    for (const otherField of otherFields) {
+      if (Array.isArray(req.body[otherField])) {
+        allValues = [...allValues, ...req.body[otherField]];
+      }
+    }
+  }
+  return new Set(allValues).size === allValues.length;
+};

@@ -1,11 +1,9 @@
 import { Router } from 'express';
 import { wrap } from '../common';
-import emailJobController from './emailJobController';
+import { EmailJobController } from './emailJobController';
 
-const router = Router();
+export const router = Router();
 
-router.post('/', wrap(emailJobController.post));
+router.post('/', wrap(EmailJobController.post));
 
-router.get('/:referenceId', wrap(emailJobController.get));
-
-export default router;
+router.get('/:referenceId', wrap(EmailJobController.get));

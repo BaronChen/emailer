@@ -1,4 +1,4 @@
-import logger from '@lib/logger';
+import { logger } from '@lib/logger';
 import { SQS } from 'aws-sdk';
 import { IMessageBase } from './messageBase';
 
@@ -42,6 +42,6 @@ const publishMessage = async (message: IMessageBase): Promise<boolean> => {
   }
 };
 
-export default {
+export const Publisher = {
   publishMessage
 };

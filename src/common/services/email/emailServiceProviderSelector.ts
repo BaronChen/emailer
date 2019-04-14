@@ -1,17 +1,28 @@
 import { EmailServiceProvider, enumToArray } from '@common/enums';
-import logger from '@lib/logger';
+import { logger } from '@lib/logger';
 
-const FAILOVER_THRESHOLD = process.env.FAILOVER_THRESHOLD || 3;
+export const FAILOVER_THRESHOLD = process.env.FAILOVER_THRESHOLD || 3;
 
 // TODO: store these variable to redis or database to improve multi instance performance
 let currentServiceProvider = EmailServiceProvider.SendGrid;
 let failedCounter = 0;
 
-export const getCurrentServiceProvider = () => {
+const initialiseFailOverConfig = (
+  defaultServiceProvider: EmailServiceProvider
+) => {
+  currentServiceProvider = defaultServiceProvider;
+  failedCounter = 0;
+};
+
+const getCurrentServiceProvider = () => {
   return currentServiceProvider;
 };
 
-export const recordFailureForServiceProvider = (
+const getCurrentFailedCounter = () => {
+  return failedCounter;
+};
+
+const recordFailureForServiceProvider = (
   failedServiceProvider: EmailServiceProvider
 ) => {
   if (failedServiceProvider !== currentServiceProvider) {
@@ -36,4 +47,11 @@ const getFailOverProvider = (
   }
   logger.error(`Fail over to ${providers[i]}`);
   return providers[i];
+};
+
+export const EmailServiceProviderSelector = {
+  initialiseFailOverConfig,
+  getCurrentServiceProvider,
+  getCurrentFailedCounter,
+  recordFailureForServiceProvider
 };

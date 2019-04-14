@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { ApiError, errorHanlder } from 'src/api/common';
-import emailRouter from './email/router';
+import { router as emailRouter } from './email/router';
 
 const app: express.Express = express();
 const port = process.env.SERVER_PORT || 8888;

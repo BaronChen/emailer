@@ -1,2 +1,2 @@
-export { default as mailGun, IMailGunPayload } from './mailGun';
-export { default as sendGrid, ISendGridPayload } from './sendGrid';
+export { MailGun, IMailGunPayload } from './mailGun';
+export { SendGrid, ISendGridPayload } from './sendGrid';

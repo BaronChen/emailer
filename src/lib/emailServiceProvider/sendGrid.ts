@@ -1,4 +1,4 @@
-import logger from '@lib/logger';
+import { logger } from '@lib/logger';
 import { OptionsWithUri, post } from 'request-promise-native';
 
 const url = process.env.SENDGRID_URL || 'https://api.sendgrid.com/v3/mail/send';
@@ -49,6 +49,6 @@ const sendEmailWithSendGrid = async (payload: ISendGridPayload) => {
   }
 };
 
-export default {
+export const SendGrid = {
   sendEmailWithSendGrid
 };

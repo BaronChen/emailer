@@ -1,4 +1,4 @@
 export * from './sqsConfig';
-export { default as publisher } from './publisher';
-export { default as consumer } from './consumer';
+export { Publisher } from './publisher';
+export { Consumer } from './consumer';
 export * from './messageBase';

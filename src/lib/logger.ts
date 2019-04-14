@@ -1,6 +1,6 @@
 import { createLogger, Logger, transports } from 'winston';
 
-const logger: Logger = createLogger({
+export const logger: Logger = createLogger({
   transports: [
     // colorize the output to the console
     new transports.Console({
@@ -8,5 +8,3 @@ const logger: Logger = createLogger({
     })
   ]
 });
-
-export default logger;

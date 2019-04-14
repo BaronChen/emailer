@@ -1,14 +1,11 @@
-import { emailJobRepository, IEmailJob } from '@common/db';
+import { EmailJobRepository, IEmailJob } from '@common/db';
 import { EmailJobStatus, EmailServiceProvider } from '@common/enums';
 import { IEmailJobMessage, MessageTypes } from '@common/messages';
-import { mailGun, sendGrid } from '@lib/emailServiceProvider/';
-import logger from '@lib/logger';
-import { publisher } from '@lib/sqs';
+import { MailGun, SendGrid } from '@lib/emailServiceProvider/';
+import { logger } from '@lib/logger';
+import { Publisher } from '@lib/sqs';
 import * as uuid from 'uuid';
-import {
-  getCurrentServiceProvider,
-  recordFailureForServiceProvider
-} from './emailServiceProviderSelector';
+import { EmailServiceProviderSelector } from './emailServiceProviderSelector';
 import {
   IEmailStatusQueryRequest,
   IEmailStatusQueryResponse,
@@ -16,7 +13,7 @@ import {
   ISendEmailResponse
 } from './interfaces';
 
-export const createEmailJob = async (
+const createEmailJob = async (
   sendEmailRequest: ISendEmailRequest
 ): Promise<ISendEmailResponse> => {
   const now = new Date();
@@ -29,7 +26,7 @@ export const createEmailJob = async (
     retryCount: 0
   } as IEmailJob;
 
-  const result = await emailJobRepository.create(emailJob);
+  const result = await EmailJobRepository.create(emailJob);
   const id = result._id.toString();
 
   const message: IEmailJobMessage = {
@@ -38,7 +35,7 @@ export const createEmailJob = async (
     messageType: MessageTypes.EmailJobMessage
   };
 
-  const success = await publisher.publishMessage(message);
+  const success = await Publisher.publishMessage(message);
 
   if (!success) {
     // TODO: Handle fail to publish message
@@ -48,10 +45,10 @@ export const createEmailJob = async (
   return { referenceId: id };
 };
 
-export const queryJobStatus = async (
+const queryJobStatus = async (
   jobStatusQueryStatus: IEmailStatusQueryRequest
 ): Promise<IEmailStatusQueryResponse> => {
-  const result = await emailJobRepository.findById(
+  const result = await EmailJobRepository.findById(
     jobStatusQueryStatus.referenceId
   );
 
@@ -68,17 +65,17 @@ export const queryJobStatus = async (
   };
 };
 
-export const sendEmail = async (emailJobReferenceId: string): Promise<void> => {
-  const job = await emailJobRepository.findById(emailJobReferenceId);
+const sendEmail = async (emailJobReferenceId: string): Promise<void> => {
+  const job = await EmailJobRepository.findById(emailJobReferenceId);
   let success = false;
-  const serviceProvider = getCurrentServiceProvider();
+  const serviceProvider = EmailServiceProviderSelector.getCurrentServiceProvider();
   logger.info(`Try to send email for job ${job.id} with ${serviceProvider}`);
   switch (serviceProvider) {
     case EmailServiceProvider.MailGun:
-      success = await mailGun.sendEmailWithMailGun(job.toMailGunPayload());
+      success = await MailGun.sendEmailWithMailGun(job.toMailGunPayload());
       break;
     case EmailServiceProvider.SendGrid:
-      success = await sendGrid.sendEmailWithSendGrid(job.toSendGridPayload());
+      success = await SendGrid.sendEmailWithSendGrid(job.toSendGridPayload());
       break;
     default:
       break;
@@ -89,14 +86,16 @@ export const sendEmail = async (emailJobReferenceId: string): Promise<void> => {
   if (!success) {
     job.retryCount++;
   }
-  await emailJobRepository.update(job);
+  await EmailJobRepository.update(job);
 
   if (success) {
     logger.info(`Email sent for job ${job.id} with ${serviceProvider}`);
   } else {
     logger.info(`Email fail to sent for job ${job.id} with ${serviceProvider}`);
-    recordFailureForServiceProvider(serviceProvider);
-    await publisher.publishMessage({
+    EmailServiceProviderSelector.recordFailureForServiceProvider(
+      serviceProvider
+    );
+    await Publisher.publishMessage({
       messageType: MessageTypes.EmailJobMessage,
       entityId: job.id,
       messageId: uuid.v4()
@@ -105,7 +104,7 @@ export const sendEmail = async (emailJobReferenceId: string): Promise<void> => {
   }
 };
 
-export default {
+export const EmailService = {
   createEmailJob,
   queryJobStatus,
   sendEmail

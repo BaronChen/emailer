@@ -1,5 +1,5 @@
 import { connect } from 'mongoose';
-import logger from './logger';
+import { logger } from './logger';
 
 export const connectMongo = (connectionString: string) => {
   connect(

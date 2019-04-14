@@ -82,4 +82,4 @@ export interface IEmailJob extends Document {
   toSendGridPayload: () => ISendGridPayload;
 }
 
-export default model<IEmailJob>('EmailJob', emailJobSchema);
+export const EmailJob = model<IEmailJob>('EmailJob', emailJobSchema);

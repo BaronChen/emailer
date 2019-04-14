@@ -1,11 +1,11 @@
 import { MessageTypes } from '@common/messages';
-import { consumer } from '@lib/sqs';
+import { Consumer } from '@lib/sqs';
 import { emailJobMessageProcessor } from './emailJobMessageProcessor';
 
 export const configMessageProcessors = () => {
-  consumer.addMessageProcessor(
+  Consumer.addMessageProcessor(
     MessageTypes.EmailJobMessage,
     emailJobMessageProcessor
   );
-  consumer.startConsumer();
+  Consumer.startConsumer();
 };

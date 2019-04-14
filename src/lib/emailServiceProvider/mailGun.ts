@@ -1,4 +1,4 @@
-import logger from '@lib/logger';
+import { logger } from '@lib/logger';
 import { OptionsWithUri, post } from 'request-promise-native';
 
 const url =
@@ -42,6 +42,6 @@ const sendEmailWithMailGun = async (payload: IMailGunPayload) => {
   }
 };
 
-export default {
+export const MailGun = {
   sendEmailWithMailGun
 };

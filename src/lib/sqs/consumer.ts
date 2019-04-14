@@ -1,6 +1,6 @@
-import logger from '@lib/logger';
+import { logger } from '@lib/logger';
 import { SQS } from 'aws-sdk';
-import { Consumer } from 'sqs-consumer';
+import { Consumer as SqsConsumer } from 'sqs-consumer';
 
 const queueUrl =
   process.env.SQS_URL ||
@@ -20,7 +20,7 @@ const addMessageProcessor = <T>(
 };
 
 const startConsumer = () => {
-  const consumer: Consumer = Consumer.create({
+  const consumer: SqsConsumer = SqsConsumer.create({
     queueUrl,
     sqs: new SQS(),
     messageAttributeNames: ['EntityId', 'MessageType'],
@@ -55,7 +55,7 @@ const startConsumer = () => {
   consumer.start();
 };
 
-export default {
+export const Consumer = {
   addMessageProcessor,
   startConsumer
 };

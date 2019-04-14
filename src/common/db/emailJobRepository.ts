@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { default as EmailJob, IEmailJob } from './models/emailJob';
+import { EmailJob, IEmailJob } from './models/emailJob';
 
 const create = async (emailJob: IEmailJob): Promise<IEmailJob> => {
   return await EmailJob.create(emailJob);
@@ -16,4 +16,8 @@ const findById = async (id: string): Promise<IEmailJob> => {
   });
 };
 
-export default { create, update, findById };
+export const EmailJobRepository = {
+  create,
+  update,
+  findById
+};
