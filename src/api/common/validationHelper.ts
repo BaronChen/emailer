@@ -101,4 +101,36 @@ export const isUniqueArray = (): {
   };
 };
 
+export const isUniqueAcrossArrays = (
+  otherFields: string[]
+): {
+  [name: string]: ValidatorSchemaOptions<CustomValidator>;
+} => {
+  return {
+    custom: {
+      errorMessage: errorMessageConstructor(
+        'Values must be unique across \'${field}\', ' +
+          otherFields.map(x => `'${x}'`).join(', ')
+      ),
+      options: (value: any[], { req, location, path }): boolean => {
+        if (
+          Array.isArray(value) &&
+          Array.isArray(otherFields) &&
+          otherFields.length > 0
+        ) {
+          let allValues = [...value];
+          for (const otherField of otherFields) {
+            if (Array.isArray(req.body[otherField])) {
+              allValues = [...allValues, ...req.body[otherField]];
+            }
+          }
+
+          return new Set(allValues).size === allValues.length;
+        }
+        return false;
+      }
+    }
+  };
+};
+
 export default {};
