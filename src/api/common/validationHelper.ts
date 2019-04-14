@@ -5,6 +5,15 @@ import {
   ValidatorOptions,
   ValidatorSchemaOptions
 } from 'express-validator/check';
+import { template } from 'lodash';
+
+export const errorMessageConstructor = (errorTemplate: string) => (
+  value,
+  { location, path }
+) => {
+  const compile = template(errorTemplate);
+  return compile({ field: path });
+};
 
 export const trimString = (): {
   [name: string]: SanitizerSchemaOptions<any>;
@@ -19,7 +28,7 @@ export const existsValidator = (): {
 } => {
   return {
     exists: {
-      errorMessage: 'Field is required',
+      errorMessage: errorMessageConstructor('\'${field}\' is required'),
       options: {
         checkNull: true,
         checkFalsy: true
@@ -33,7 +42,7 @@ export const isEmailValidator = (): {
 } => {
   return {
     isEmail: {
-      errorMessage: 'Field must be a valid email'
+      errorMessage: errorMessageConstructor('\'${field}\' must be a valid email')
     }
   };
 };
@@ -43,7 +52,7 @@ export const isArrayValidator = (): {
 } => {
   return {
     isArray: {
-      errorMessage: 'Field must be an array'
+      errorMessage: errorMessageConstructor('\'${field}\' must be an array')
     }
   };
 };
@@ -53,7 +62,7 @@ export const isMongoIdValidator = (): {
 } => {
   return {
     isMongoId: {
-      errorMessage: 'Id is not valid'
+      errorMessage: errorMessageConstructor('\'${field}\' is not a valid id')
     }
   };
 };
@@ -63,10 +72,28 @@ export const notEmptyArrayValidator = (): {
 } => {
   return {
     custom: {
-      errorMessage: 'Array cannot be empty',
+      errorMessage: errorMessageConstructor(
+        '\'${field}\' values cannot be empty'
+      ),
       options: (value: any[]): boolean => {
         if (Array.isArray(value) && value.length > 0) {
           return true;
+        }
+        return false;
+      }
+    }
+  };
+};
+
+export const isUniqueArray = (): {
+  [name: string]: ValidatorSchemaOptions<CustomValidator>;
+} => {
+  return {
+    custom: {
+      errorMessage: errorMessageConstructor('\'${field}\' values must be unique'),
+      options: (value: any[]): boolean => {
+        if (Array.isArray(value)) {
+          return new Set(value).size === value.length;
         }
         return false;
       }
