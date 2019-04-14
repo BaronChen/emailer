@@ -2,6 +2,10 @@
 
 This is a sample email API that handles failover between SendGrid and MailGun
 
+## Notes
+
+Please notes, as my MailGun account is disabled by their system and I can't sign up another one use my credit card, the failover from sendgrid to mailgun will not work in the live demo environment.
+
 ## Tech Stack
 
 - NodeJs 10
@@ -90,13 +94,6 @@ curl -X GET \
   http://emailer.technerd.me:8888/emailJob/5cb312c314b362001a0d3ceb \
   -H 'cache-control: no-cache'
 ```
-
-## Failobver test
-
-For demostration purpose, I have build a 'back-door' to trigger failover:
-
-- if `subject` is `sendgrid-down`, the service will fail over from SendGrid to MailGun
-- if `subject` is `mailgun-down`, the service will fail over from MailGun to SendGrid
 
 ## Run Locally
 
