@@ -30,10 +30,10 @@ const sendEmailWithMailGun = async (payload: IMailGunPayload) => {
   };
 
   try {
-    // this is a manul trigger for failover for demostration purpose
-    if (payload.subject === 'mailgun-down') {
-      throw new Error('error to trigger failover');
-    }
+    // // this is a manul trigger for failover for demostration purpose
+    // if (payload.subject === 'mailgun-down') {
+    //   throw new Error('error to trigger failover');
+    // }
     await post(options);
     return true;
   } catch (err) {

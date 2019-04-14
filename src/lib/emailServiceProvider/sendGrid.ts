@@ -37,10 +37,10 @@ const sendEmailWithSendGrid = async (payload: ISendGridPayload) => {
   };
 
   try {
-    // this is a manul trigger for failover for demostration purpose
-    if (payload.personalizations[0].subject === 'sendgrid-down') {
-      throw new Error('error to trigger failover');
-    }
+    // // this is a manul trigger for failover for demostration purpose
+    // if (payload.personalizations[0].subject === 'sendgrid-down') {
+    //   throw new Error('error to trigger failover');
+    // }
     await post(options);
     return true;
   } catch (err) {
