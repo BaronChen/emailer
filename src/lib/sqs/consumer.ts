@@ -19,38 +19,39 @@ const addMessageProcessor = <T>(
   messageProcessors[messageType] = processor;
 };
 
-const consumer: Consumer = Consumer.create({
-  queueUrl,
-  messageAttributeNames: ['EntityId', 'MessageType'],
-  handleMessage: async (message: SQS.Message) => {
-    const messageType = message.MessageAttributes.MessageType.StringValue;
-    const entityId = message.MessageAttributes.EntityId.StringValue;
-    logger.info(
-      `start to process message ${messageType} for entity ${entityId}`
-    );
-    try {
-      if (messageProcessors[messageType]) {
-        const messageBody = JSON.parse(message.Body);
-        await messageProcessors[messageType](entityId, messageBody);
-      }
-    } catch (err) {
-      logger.error(
-        `fail to process message ${messageType} for entity ${entityId} with Error: `,
-        err
-      );
-    }
-  }
-});
-
-consumer.on('error', err => {
-  logger.error(`Consumer critical error: ${err.message}`);
-});
-
-consumer.on('processing_error', err => {
-  logger.error(`Consumer processing error: ${err.message}`);
-});
-
 const startConsumer = () => {
+  const consumer: Consumer = Consumer.create({
+    queueUrl,
+    sqs: new SQS(),
+    messageAttributeNames: ['EntityId', 'MessageType'],
+    handleMessage: async (message: SQS.Message) => {
+      const messageType = message.MessageAttributes.MessageType.StringValue;
+      const entityId = message.MessageAttributes.EntityId.StringValue;
+      logger.info(
+        `start to process message ${messageType} for entity ${entityId}`
+      );
+      try {
+        if (messageProcessors[messageType]) {
+          const messageBody = JSON.parse(message.Body);
+          await messageProcessors[messageType](entityId, messageBody);
+        }
+      } catch (err) {
+        logger.error(
+          `fail to process message ${messageType} for entity ${entityId} with Error: `,
+          err
+        );
+      }
+    }
+  });
+
+  consumer.on('error', err => {
+    logger.error(`Consumer critical error: ${err.message}`);
+  });
+
+  consumer.on('processing_error', err => {
+    logger.error(`Consumer processing error: ${err.message}`);
+  });
+
   consumer.start();
 };
 

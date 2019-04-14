@@ -1,6 +1,6 @@
 import logger from '@lib/logger';
 import { SQS } from 'aws-sdk';
-import { IMessageBase } from './jobBase';
+import { IMessageBase } from './messageBase';
 
 const queueUrl =
   process.env.SQS_URL ||
