@@ -4,7 +4,6 @@ import { IEmailJobMessage, MessageTypes } from '@common/messages';
 import { mailGun, sendGrid } from '@lib/emailServiceProvider/';
 import logger from '@lib/logger';
 import { publisher } from '@lib/sqs';
-import { ApiError } from 'src/api/common';
 import * as uuid from 'uuid';
 import {
   getCurrentServiceProvider,
@@ -43,7 +42,7 @@ export const createEmailJob = async (
 
   if (!success) {
     // TODO: Handle fail to publish message
-    throw new ApiError('Fail to process send email request');
+    throw new Error('Fail to process send email request');
   }
 
   return { referenceId: id };
@@ -55,6 +54,10 @@ export const queryJobStatus = async (
   const result = await emailJobRepository.findById(
     jobStatusQueryStatus.referenceId
   );
+
+  if (!result) {
+    return null;
+  }
 
   return {
     referenceId: result._id.toString(),

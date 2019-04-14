@@ -4,7 +4,7 @@ import {
   ISendEmailRequest
 } from '@common/services';
 import { Request, Response } from 'express';
-import { IControllerMethod } from '../common';
+import { ApiError, IControllerMethod } from '../common';
 import { getShcema, postSchema } from './emailJobShcemas';
 
 const post = async (req: Request, res: Response) => {
@@ -21,6 +21,10 @@ const get = async (req: Request, res: Response) => {
   };
 
   const response = await emailService.queryJobStatus(emailStatusQueryRequest);
+
+  if (!response) {
+    throw new ApiError('Email Job Not Found', 404);
+  }
 
   res.json(response);
 };
