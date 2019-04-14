@@ -3,9 +3,7 @@ import { OptionsWithUri, post } from 'request-promise-native';
 
 const url =
   process.env.MAILGUN_URL || 'https://api.mailgun.net/v3/technerd.me/messages';
-const mailGunApiKey =
-  process.env.MAILGUN_API_KEY ||
-  'e8b9f62d4276d0a8e23010b6bd523a37-6140bac2-192b688f';
+const mailGunApiKey = process.env.MAILGUN_API_KEY;
 
 export interface IMailGunPayload {
   from: string;

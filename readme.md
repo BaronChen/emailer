@@ -99,11 +99,15 @@ curl -X GET \
 
 ###### Require [Docker](https://www.docker.com)
 
+Update `MAILGUN_URL`, `MAILGUN_API_KEY` and `SENDGRID_API_KEY` in `dev.env`
+
 ```
 docker-compose up
 ```
 
 ## Develop Locally
+
+Setup `MAILGUN_URL`, `MAILGUN_API_KEY` and `SENDGRID_API_KEY` as environment variable
 
 ```
 yarn install

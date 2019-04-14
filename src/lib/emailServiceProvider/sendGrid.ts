@@ -2,9 +2,7 @@ import { logger } from '@lib/logger';
 import { OptionsWithUri, post } from 'request-promise-native';
 
 const url = process.env.SENDGRID_URL || 'https://api.sendgrid.com/v3/mail/send';
-const sendGridApiKey =
-  process.env.SENDGRID_API_KEY ||
-  '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';
+const sendGridApiKey = process.env.SENDGRID_API_KEY;
 
 export interface ISendGridPayload {
   personalizations: [
