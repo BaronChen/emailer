@@ -37,7 +37,7 @@ export const postSchema: ValidationSchema = {
     in: 'body',
     optional: true,
     ...notEmptyArrayValidator(),
-    ...isUniqueAcrossArrays(['cc', 'bcc'])
+    ...isUniqueAcrossArrays(['to', 'bcc'])
   },
   'bcc.*': {
     in: 'body',
@@ -48,7 +48,7 @@ export const postSchema: ValidationSchema = {
     in: 'body',
     optional: true,
     ...notEmptyArrayValidator(),
-    ...isUniqueAcrossArrays(['cc', 'bcc'])
+    ...isUniqueAcrossArrays(['to', 'cc'])
   }
 };
 

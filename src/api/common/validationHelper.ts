@@ -113,21 +113,20 @@ export const isUniqueAcrossArrays = (
           otherFields.map(x => `'${x}'`).join(', ')
       ),
       options: (value: any[], { req, location, path }): boolean => {
+        let allValues = [...value];
         if (
           Array.isArray(value) &&
           Array.isArray(otherFields) &&
           otherFields.length > 0
         ) {
-          let allValues = [...value];
           for (const otherField of otherFields) {
             if (Array.isArray(req.body[otherField])) {
               allValues = [...allValues, ...req.body[otherField]];
             }
           }
-
-          return new Set(allValues).size === allValues.length;
         }
-        return false;
+
+        return new Set(allValues).size === allValues.length;
       }
     }
   };
