@@ -4,9 +4,7 @@ import {
   isArrayValidator,
   isEmailValidator,
   isMongoIdValidator,
-  isUniqueAcrossArrays,
-  isUniqueArray,
-  notEmptyArrayValidator,
+  notEmptyAndIsUniqueAcrossArrays,
   trimString
 } from '../common';
 
@@ -25,8 +23,7 @@ export const postSchema: ValidationSchema = {
   to: {
     in: 'body',
     ...existsValidator(),
-    ...notEmptyArrayValidator(),
-    ...isUniqueAcrossArrays(['cc', 'bcc'])
+    ...notEmptyAndIsUniqueAcrossArrays(['cc', 'bcc'])
   },
   'cc.*': {
     in: 'body',
@@ -36,8 +33,7 @@ export const postSchema: ValidationSchema = {
   cc: {
     in: 'body',
     optional: true,
-    ...notEmptyArrayValidator(),
-    ...isUniqueAcrossArrays(['to', 'bcc'])
+    ...notEmptyAndIsUniqueAcrossArrays(['to', 'bcc'])
   },
   'bcc.*': {
     in: 'body',
@@ -47,8 +43,7 @@ export const postSchema: ValidationSchema = {
   bcc: {
     in: 'body',
     optional: true,
-    ...notEmptyArrayValidator(),
-    ...isUniqueAcrossArrays(['to', 'cc'])
+    ...notEmptyAndIsUniqueAcrossArrays(['to', 'cc'])
   }
 };
 

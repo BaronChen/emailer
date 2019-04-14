@@ -67,41 +67,7 @@ export const isMongoIdValidator = (): {
   };
 };
 
-export const notEmptyArrayValidator = (): {
-  [name: string]: ValidatorSchemaOptions<CustomValidator>;
-} => {
-  return {
-    custom: {
-      errorMessage: errorMessageConstructor(
-        '\'${field}\' values cannot be empty'
-      ),
-      options: (value: any[]): boolean => {
-        if (Array.isArray(value) && value.length > 0) {
-          return true;
-        }
-        return false;
-      }
-    }
-  };
-};
-
-export const isUniqueArray = (): {
-  [name: string]: ValidatorSchemaOptions<CustomValidator>;
-} => {
-  return {
-    custom: {
-      errorMessage: errorMessageConstructor('\'${field}\' values must be unique'),
-      options: (value: any[]): boolean => {
-        if (Array.isArray(value)) {
-          return new Set(value).size === value.length;
-        }
-        return false;
-      }
-    }
-  };
-};
-
-export const isUniqueAcrossArrays = (
+export const notEmptyAndIsUniqueAcrossArrays = (
   otherFields: string[]
 ): {
   [name: string]: ValidatorSchemaOptions<CustomValidator>;
@@ -109,10 +75,14 @@ export const isUniqueAcrossArrays = (
   return {
     custom: {
       errorMessage: errorMessageConstructor(
-        'Values must be unique across \'${field}\', ' +
+        'Values must be not empty and unique across \'${field}\', ' +
           otherFields.map(x => `'${x}'`).join(', ')
       ),
       options: (value: any[], { req, location, path }): boolean => {
+        if (!Array.isArray(value) || value.length === 0) {
+          return false;
+        }
+
         let allValues = [...value];
         if (
           Array.isArray(value) &&
@@ -125,7 +95,6 @@ export const isUniqueAcrossArrays = (
             }
           }
         }
-
         return new Set(allValues).size === allValues.length;
       }
     }
