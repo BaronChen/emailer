@@ -39,12 +39,12 @@ export const createEmailJob = async (
     messageType: MessageTypes.EmailJobMessage
   };
 
-  // const success = await publisher.publishMessage(message);
+  const success = await publisher.publishMessage(message);
 
-  // if (!success) {
-  //   // TODO: Handle fail to publish message
-  //   throw new ApiError('Fail to process send email request');
-  // }
+  if (!success) {
+    // TODO: Handle fail to publish message
+    throw new ApiError('Fail to process send email request');
+  }
 
   return { referenceId: id };
 };
