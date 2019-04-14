@@ -1,4 +1,4 @@
-FROM node:10.15.3
+FROM node:10.15.3-alpine
 
 WORKDIR /tmp
 COPY ["package.json", "yarn.lock", "./"]

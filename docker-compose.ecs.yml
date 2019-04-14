@@ -1,0 +1,23 @@
+version: '3.0'
+
+services:
+  mongo:
+    image: mongo:4.1.10
+    ports:
+      - '27017:27017'
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: emailer-db
+        awslogs-region: ap-southeast-2
+        awslogs-stream-prefix: mongo
+  emailer:
+    image: 677611292116.dkr.ecr.ap-southeast-2.amazonaws.com/emailer:latest
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: emailer-service
+        awslogs-region: ap-southeast-2
+        awslogs-stream-prefix: emailer
+    env_file:
+      - ecs.env
