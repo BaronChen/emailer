@@ -4,7 +4,7 @@ This is a sample email API that handles failover between SendGrid and MailGun
 
 ## Notes
 
-### As both of my mailgun and sendgrid account is disabled, and whenever I register new ones they get disabled immediately, the live demo API will not actually send any email......
+### Update: As my mailgun account is still disabled, the live demo API will only work with sendgrid and failover will not work....
 
 ## Tech Stack
 
